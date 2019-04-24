@@ -75,8 +75,8 @@ screen.append(ETHEquity);
 
 var Hashrate = blessed.text({
   content: 'Hashrate',
-  bg: 88,
-  fg: 204,
+  bg: 'blue',
+  fg: 'cyan',
   top: pos++,
   width: 32
 });
@@ -90,8 +90,8 @@ screen.append(ReportedHashrate);
 
 var Unpaid = blessed.text({
   content: 'Unpaid',
-  bg: 88,
-  fg: 204,
+  bg: 'blue',
+  fg: 'cyan',
   top: pos++,
   width: 32
 });
