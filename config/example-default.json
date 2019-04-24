@@ -1,0 +1,13 @@
+{
+  "gdax":{
+    "apiUri": "https://api.pro.coinbase.com",
+    "feedUri": "wss://ws-feed.pro.coinbase.com",
+    "key": "<API KEY>",
+    "secret": "<BASE64 SECRET>",
+    "pass": "<API PASSWORD>"
+  },
+  "ethermine":{
+    "settingUri": "https://api.ethermine.org/miner/<ETH ADDRESS>/settings",
+    "statUri": "https://api.ethermine.org/miner/<ETH ADDRESS>/currentStats"
+  }
+}

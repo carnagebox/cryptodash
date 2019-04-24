@@ -1,0 +1,23 @@
+{
+  "name": "carnagebox-dash",
+  "version": "0.1.0",
+  "description": "Dashboard for displaying cryptomining information",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ryan Maulding <ryan@carnagebox.com> (https://www.carnagebox.com/)",
+  "homepage": "https://github.com/carnagebox/cryptodash#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carnagebox/cryptodash.git"
+  },
+  "license": "SEE LICENSE IN license.txt",
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "config": "^3.1.0",
+    "gdax": "^0.8.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
+  }
+}
