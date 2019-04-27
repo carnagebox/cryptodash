@@ -1,4 +1,4 @@
-# CaRNaGeBoX CRyPToDaSH
+# Carnagebox Cryptodash
 
 Dashboard which displays real-time crypto-mining (Ethereum) and exchange (GDAX) information.
 
