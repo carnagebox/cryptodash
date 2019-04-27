@@ -219,7 +219,6 @@ function updateDelta() {
   if(d>0) {
     o += d+'s';
   }
-  var o = 'Δ ';
   if(o=='Δ ') {
     o += 'soon';
     switch(deltaWaiting) {
