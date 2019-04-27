@@ -8,7 +8,7 @@ const screen = blessed.screen({
   smartCSR: true
 });
 
-screen.title = "CaRNaGeBoX";
+screen.title = "CBX:Dashboard";
 pos = 0;
 
 var Wallet = blessed.text({
@@ -181,7 +181,7 @@ function refreshMinerStats() {
         //Reset everything pending payout.
         _UnpaidBalance = 0.0;
         _CoinsPerMSec = 0.0;
-        PayoutETA.setContent('+ Payout pending...');
+        PayoutETA.setContent('H --');
       }
    });
   });
@@ -197,6 +197,7 @@ function updateUnpaidBalance() {
 }
 updateUnpaidBalance();
 
+var deltaWaiting = false;
 function updateDelta() {
   var seconds = _PayoutDelta--;
   var a = Math.floor(seconds/86400); //days
@@ -218,40 +219,69 @@ function updateDelta() {
   if(d>0) {
     o += d+'s';
   }
+  var o = 'Δ ';
+  if(o=='Δ ') {
+    o += 'soon';
+    switch(deltaWaiting) {
+      case 1:
+        o += '';
+        break;
+      case 2:
+        o += '.';
+        break;
+      case 3:
+        o += '..';
+        break;
+      case 4:
+        o += '...';
+        break;
+      case 5:
+        o += '...';
+        break;
+      default:
+        o += '...';
+        deltaWaiting = 0;
+        break;
+    }
+    deltaWaiting++;
+  } else {
+    deltaWaiting = false;
+  }
   PayoutDelta.setContent(o);
   setTimeout(updateDelta, 1000);
 }
 updateDelta();
 
-const websocket = new Gdax.WebsocketClient(
-  ['ETH-USD'],
-  gdax.feedUri,
-  {
-    key: gdax.key,
-    secret: gdax.secret,
-    passphrase: gdax.pass
-  },
-  { channels: ['ticker'] }
-);
-
-websocket.on('message', data => {
-  if(data['type'] == 'ticker') {
-    _Exchange = Number.parseFloat(data['price']);
-    ETHUSDExchangeRate.setContent('$ ' + _Exchange.toFixed(2));
-    _USDEquity = (_Exchange * _ETHBalance) + _USDBalance;
-    var _USDTrade = (0.02 * _USDEquity).toFixed(2);
-    USDEquity.setContent('$ ' + _USDEquity.toFixed(2) + ' ($' + _USDTrade  + ')');
-    _ETHEquity = (_USDBalance / _Exchange) + _ETHBalance;
-    var _ETHTrade = (0.02 * _ETHEquity).toFixed(4);
-    ETHEquity.setContent('Ξ ' + _ETHEquity.toFixed(8) + ' (Ξ' + _ETHTrade + ')');
-    screen.render();
-  }
-});
-websocket.on('error', err => {
-  /* handle error */
-});
-websocket.on('close', () => {
-  /* ... */
-  process.exit(1);
-});
+function connectWebsocket() {
+  const websocket = new Gdax.WebsocketClient(
+    ['ETH-USD'],
+    gdax.feedUri,
+    {
+      key: gdax.key,
+      secret: gdax.secret,
+      passphrase: gdax.pass
+    },
+    { channels: ['ticker'] }
+  );
+  websocket.on('message', data => {
+    if(data['type'] == 'ticker') {
+      _Exchange = Number.parseFloat(data['price']);
+      ETHUSDExchangeRate.setContent('$ ' + _Exchange.toFixed(2));
+      _USDEquity = (_Exchange * _ETHBalance) + _USDBalance;
+      var _USDTrade = (0.02 * _USDEquity).toFixed(2);
+      USDEquity.setContent('$ ' + _USDEquity.toFixed(2) + ' ($' + _USDTrade  + ')');
+      _ETHEquity = (_USDBalance / _Exchange) + _ETHBalance;
+      var _ETHTrade = (0.02 * _ETHEquity).toFixed(4);
+      ETHEquity.setContent('Ξ ' + _ETHEquity.toFixed(8) + ' (Ξ' + _ETHTrade + ')');
+      screen.render();
+    }
+  });
+  websocket.on('error', err => {
+    /* handle error */
+  });
+  websocket.on('close', () => {
+    connectWebsocket();
+  });
+}
+connectWebsocket();
 
