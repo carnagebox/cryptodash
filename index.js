@@ -220,7 +220,7 @@ function updateDelta() {
     o += d+'s';
   }
   if(o=='Δ ') {
-    o += 'soon';
+    o += 'less than a minute';
     switch(deltaWaiting) {
       case 1:
         o += '';
