@@ -138,7 +138,7 @@ const authedClient = new Gdax.AuthenticatedClient(
 // Wallet
 function refreshWallet() {
   authedClient.getAccounts((error, response, data) => {
-    if(error) {
+    if(error || !data) {
       return false;
     }
     data.forEach((d) => {
@@ -165,8 +165,14 @@ var _minPayout = 1;
 
 function refreshMinerStats() {
   request.get(ethermine.settingUri, { json: true }, (err, res, body) => {
+    if(err || !body.data) {
+      return;
+    }
     _minPayout = body.data.minPayout;
     request.get(ethermine.statUri, { json: true }, (err, res, body) => {
+      if(err || !body.data) {
+        return;
+      }
       ReportedHashrate.setContent('♯ ' + Number.parseFloat(body.data.reportedHashrate/1000000).toFixed(2) + ' Mh/s');
       if(body.data.unpaid) {
         _UnpaidBalance = Number.parseFloat(body.data.unpaid/1000000000000000000);
