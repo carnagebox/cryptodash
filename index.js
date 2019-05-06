@@ -11,6 +11,22 @@ const screen = blessed.screen({
 screen.title = "CBX:Dashboard";
 pos = 0;
 
+var Equity = blessed.text({
+  content: 'Equity',
+  bg: 'blue',
+  fg: 'cyan',
+  top: pos++,
+  width: 32
+});
+screen.append(Equity);
+
+var USDEquity = blessed.text({
+  tags: true,
+  top: pos++,
+  width: 32
+});
+screen.append(USDEquity);
+
 var Wallet = blessed.text({
   content: 'Wallet',
   bg: 'blue',
@@ -52,46 +68,46 @@ var XRPBalance = blessed.text({
 });
 screen.append(XRPBalance);
 
-var Equity = blessed.text({
-  content: 'Equity',
+var PerTrade = blessed.text({
+  content: 'Per Trade',
   bg: 'blue',
   fg: 'cyan',
   top: pos++,
   width: 32
 });
-screen.append(Equity);
+screen.append(PerTrade);
 
-var _USDEquity = 0;
-var USDEquity = blessed.text({
+var _USDPerTrade = 0.0;
+var USDPerTrade = blessed.text({
   tags: true,
   top: pos++,
   width: 32
 });
-screen.append(USDEquity);
+screen.append(USDPerTrade);
 
-var _BTCEquity = 0;
-var BTCEquity = blessed.text({
+var _BTCPerTrade = 0.0;
+var BTCPerTrade = blessed.text({
   tags: true,
   top: pos++,
   width: 32
 });
-screen.append(BTCEquity);
+screen.append(BTCPerTrade);
 
-var _ETHEquity = 0;
-var ETHEquity = blessed.text({
+var _ETHPerTrade = 0.0;
+var ETHPerTrade = blessed.text({
   tags: true,
   top: pos++,
   width: 32
 });
-screen.append(ETHEquity);
+screen.append(ETHPerTrade);
 
-var _XRPEquity = 0;
-var XRPEquity = blessed.text({
+var _XRPPerTrade = 0.0;
+var XRPPerTrade = blessed.text({
   tags: true,
   top: pos++,
   width: 32
 });
-screen.append(XRPEquity);
+screen.append(XRPPerTrade);
 
 var Hashrate = blessed.text({
   content: 'Hashrate',
@@ -288,6 +304,10 @@ updateDelta();
 var _BTCUSDExchange = 0.0;
 var _ETHUSDExchange = 0.0;
 var _XRPUSDExchange = 0.0;
+var _USDEquity = 0;
+var _BTCEquity = 0;
+var _ETHEquity = 0;
+var _XRPEquity = 0;
 
 function connectWebsocket() {
   const websocket = new Gdax.WebsocketClient(
@@ -309,18 +329,19 @@ function connectWebsocket() {
       } else if(data['product_id'] == 'XRP-USD') {
         _XRPUSDExchange = Number.parseFloat(data['price']);
       }
-      _USDEquity = _USDBalance + (_BTCBalance * _BTCUSDExchange) + (_ETHBalance * _ETHUSDExchange);
+      _USDEquity = _USDBalance + (_BTCBalance * _BTCUSDExchange) + (_ETHBalance * _ETHUSDExchange) + (_XRPBalance * _XRPUSDExchange);
       var _USDTrade = (0.02 * _USDEquity).toFixed(2);
-      USDEquity.setContent('{yellow-fg}USD{/yellow-fg} ' + _USDEquity.toFixed(2) + ' (' + _USDTrade  + ')');
       _BTCEquity = _USDEquity / _BTCUSDExchange;
       var _BTCTrade = (0.02 * _BTCEquity).toFixed(5);
-      BTCEquity.setContent('{yellow-fg}BTC{/yellow-fg} ' + _BTCEquity.toFixed(8) + ' (' + _BTCTrade  + ')');
       _ETHEquity = _USDEquity / _ETHUSDExchange;
       var _ETHTrade = (0.02 * _ETHEquity).toFixed(5);
-      ETHEquity.setContent('{yellow-fg}ETH{/yellow-fg} ' + _ETHEquity.toFixed(8) + ' (' + _ETHTrade + ')');
       _XRPEquity = _USDEquity / _XRPUSDExchange;
-      var _XRPTrade = Math.floor(0.02 * _XRPEquity);
-      XRPEquity.setContent('{yellow-fg}XRP{/yellow-fg} ' + Math.floor(_XRPEquity) + ' (' + _XRPTrade + ')');
+      var _XRPTrade = (0.02 * _XRPEquity).toFixed(0);
+      USDEquity.setContent('{yellow-fg}USD{/yellow-fg} ' + _USDEquity.toFixed(2));
+      USDPerTrade.setContent('{yellow-fg}USD{/yellow-fg} ' + _USDTrade);
+      BTCPerTrade.setContent('{yellow-fg}BTC{/yellow-fg} ' + _BTCTrade);
+      ETHPerTrade.setContent('{yellow-fg}ETH{/yellow-fg} ' + _ETHTrade);
+      XRPPerTrade.setContent('{yellow-fg}XRP{/yellow-fg} ' + _XRPTrade);
       screen.render();
     }
   });
