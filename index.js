@@ -60,14 +60,6 @@ var ETHBalance = blessed.text({
 });
 screen.append(ETHBalance);
 
-var _XRPBalance = 0.0;
-var XRPBalance = blessed.text({
-  tags: true,
-  top: pos++,
-  width: 32
-});
-screen.append(XRPBalance);
-
 var PerTrade = blessed.text({
   content: 'Per Trade',
   bg: 'blue',
@@ -100,14 +92,6 @@ var ETHPerTrade = blessed.text({
   width: 32
 });
 screen.append(ETHPerTrade);
-
-var _XRPPerTrade = 0.0;
-var XRPPerTrade = blessed.text({
-  tags: true,
-  top: pos++,
-  width: 32
-});
-screen.append(XRPPerTrade);
 
 var Hashrate = blessed.text({
   content: 'Hashrate',
@@ -190,10 +174,6 @@ function refreshWallet() {
         _ETHBalance = Number.parseFloat(d['balance']);
         var _ETHPercent = Math.round((_ETHBalance/_ETHEquity)*100);
         ETHBalance.setContent('{yellow-fg}ETH{/yellow-fg} ' + _ETHBalance.toFixed(8) + ' (' + _ETHPercent + '%)');
-      } else if (d['currency'] == 'XRP') {
-        _XRPBalance = Number.parseFloat(d['balance']);
-        var _XRPPercent = Math.round((_XRPBalance/_XRPEquity)*100);
-        XRPBalance.setContent('{yellow-fg}XRP{/yellow-fg} ' + _XRPBalance.toFixed(0) + ' (' + _XRPPercent + '%)');
       }
     });
     screen.render();
@@ -303,15 +283,13 @@ updateDelta();
 
 var _BTCUSDExchange = 0.0;
 var _ETHUSDExchange = 0.0;
-var _XRPUSDExchange = 0.0;
 var _USDEquity = 0;
 var _BTCEquity = 0;
 var _ETHEquity = 0;
-var _XRPEquity = 0;
 
 function connectWebsocket() {
   const websocket = new Gdax.WebsocketClient(
-    ['BTC-USD','ETH-USD','XRP-USD'],
+    ['BTC-USD','ETH-USD'],
     gdax.feedUri,
     {
       key: gdax.key,
@@ -326,22 +304,17 @@ function connectWebsocket() {
         _BTCUSDExchange = Number.parseFloat(data['price']);
       } else if(data['product_id'] == 'ETH-USD') {
         _ETHUSDExchange = Number.parseFloat(data['price']);
-      } else if(data['product_id'] == 'XRP-USD') {
-        _XRPUSDExchange = Number.parseFloat(data['price']);
       }
-      _USDEquity = _USDBalance + (_BTCBalance * _BTCUSDExchange) + (_ETHBalance * _ETHUSDExchange) + (_XRPBalance * _XRPUSDExchange);
+      _USDEquity = _USDBalance + (_BTCBalance * _BTCUSDExchange) + (_ETHBalance * _ETHUSDExchange);
       var _USDTrade = (0.02 * _USDEquity).toFixed(2);
       _BTCEquity = _USDEquity / _BTCUSDExchange;
       var _BTCTrade = (0.02 * _BTCEquity).toFixed(5);
       _ETHEquity = _USDEquity / _ETHUSDExchange;
       var _ETHTrade = (0.02 * _ETHEquity).toFixed(5);
-      _XRPEquity = _USDEquity / _XRPUSDExchange;
-      var _XRPTrade = (0.02 * _XRPEquity).toFixed(0);
       USDEquity.setContent('{yellow-fg}USD{/yellow-fg} ' + _USDEquity.toFixed(2));
       USDPerTrade.setContent('{yellow-fg}USD{/yellow-fg} ' + _USDTrade);
       BTCPerTrade.setContent('{yellow-fg}BTC{/yellow-fg} ' + _BTCTrade);
       ETHPerTrade.setContent('{yellow-fg}ETH{/yellow-fg} ' + _ETHTrade);
-      XRPPerTrade.setContent('{yellow-fg}XRP{/yellow-fg} ' + _XRPTrade);
       screen.render();
     }
   });
