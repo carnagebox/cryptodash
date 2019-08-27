@@ -2,6 +2,7 @@ const Gdax = require('gdax');
 const blessed = require('blessed');
 const request = require('request-promise');
 const config = require('config');
+const fs = require('fs');
 
 // Create a screen object.
 const screen = blessed.screen({
@@ -281,11 +282,12 @@ function updateDelta() {
 }
 updateDelta();
 
-var _BTCUSDExchange = 0.0;
-var _ETHUSDExchange = 0.0;
-var _USDEquity = 0;
-var _BTCEquity = 0;
-var _ETHEquity = 0;
+var _websocketInit = false;
+var _BTCUSDExchange = NaN;
+var _ETHUSDExchange = NaN;
+var _USDEquity = NaN;
+var _BTCEquity = NaN;
+var _ETHEquity = NaN;
 
 function connectWebsocket() {
   const websocket = new Gdax.WebsocketClient(
@@ -311,11 +313,18 @@ function connectWebsocket() {
       var _BTCTrade = (0.02 * _BTCEquity).toFixed(5);
       _ETHEquity = _USDEquity / _ETHUSDExchange;
       var _ETHTrade = (0.02 * _ETHEquity).toFixed(5);
-      USDEquity.setContent('{yellow-fg}USD{/yellow-fg} ' + _USDEquity.toFixed(2));
+      USDEquity.setContent('{yellow-fg}USD{/yellow-fg} ' + _USDEquity.toFixed(2) + ' '
+        + '{' + _USDEquityGainLossColor + '}'
+        + _USDEquityGainLossIndicator
+        + _USDEquityGainLoss
+        + '%{/' + _USDEquityGainLossColor + '}');
       USDPerTrade.setContent('{yellow-fg}USD{/yellow-fg} ' + _USDTrade);
       BTCPerTrade.setContent('{yellow-fg}BTC{/yellow-fg} ' + _BTCTrade);
       ETHPerTrade.setContent('{yellow-fg}ETH{/yellow-fg} ' + _ETHTrade);
       screen.render();
+    }
+    if(!_websocketInit) {
+      _websocketInit = true;
     }
   });
   websocket.on('error', err => {
@@ -327,3 +336,49 @@ function connectWebsocket() {
 }
 connectWebsocket();
 
+var _USDEquityGainLoss = NaN;
+var _USDEquityGainLossIndicator = ' ';
+var _USDEquityGainLossColor = 'green-fg';
+var _GainLossLength = '--'
+
+function refreshGainLoss() {
+  if(!_websocketInit) {
+    setTimeout(refreshGainLoss, 100);
+    return;
+  }
+
+  var gainLoss = null;
+  var data  = fs.readFileSync('gainloss.json', {flag: 'a+'});
+  if(data != '') {
+    gainLoss = JSON.parse(data);
+    gainLoss.push({equity: _USDEquity, price: _ETHUSDExchange});
+  } else {
+    gainLoss = [{equity: _USDEquity, price: _ETHUSDExchange}];
+  }
+
+  var first = _USDEquity;
+  var o = gainLoss.shift();
+  var last  = o.equity;
+  if(gainLoss.length < (24*60*10)) {
+    gainLoss.unshift(o);
+  }
+
+  gainLoss = JSON.stringify(gainLoss);
+  fs.writeFileSync('gainloss.json', gainLoss, {flag: 'w'});
+
+  var diff = last - first;
+  if(diff > 0) {
+    _USDEquityGainLoss = (100 - (first / last * 100)).toFixed(1);
+    _USDEquityGainLossIndicator = '▼';
+    _USDEquityGainLossColor = 'red-fg';
+  } else {
+    _USDEquityGainLoss = (100 - (last / first * 100)).toFixed(1);
+    _USDEquityGainLossIndicator = '▲';
+    _USDEquityGainLossColor = 'green-fg';
+  }
+
+  //TODO: Insert StopLoss sale for 5% less than yesterdays price.
+
+  setTimeout(refreshGainLoss, 10*1000);
+}
+refreshGainLoss();
