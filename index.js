@@ -290,49 +290,53 @@ var _BTCEquity = NaN;
 var _ETHEquity = NaN;
 
 function connectWebsocket() {
-  const websocket = new Gdax.WebsocketClient(
-    ['BTC-USD','ETH-USD'],
-    gdax.feedUri,
-    {
-      key: gdax.key,
-      secret: gdax.secret,
-      passphrase: gdax.pass
-    },
-    { channels: ['ticker'] }
-  );
-  websocket.on('message', data => {
-    if(data['type'] == 'ticker') {
-      if(data['product_id'] == 'BTC-USD') {
-        _BTCUSDExchange = Number.parseFloat(data['price']);
-      } else if(data['product_id'] == 'ETH-USD') {
-        _ETHUSDExchange = Number.parseFloat(data['price']);
+  try {
+    const websocket = new Gdax.WebsocketClient(
+      ['BTC-USD','ETH-USD'],
+      gdax.feedUri,
+      {
+        key: gdax.key,
+        secret: gdax.secret,
+        passphrase: gdax.pass
+      },
+      { channels: ['ticker'] }
+    );
+    websocket.on('message', data => {
+      if(data['type'] == 'ticker') {
+        if(data['product_id'] == 'BTC-USD') {
+          _BTCUSDExchange = Number.parseFloat(data['price']);
+        } else if(data['product_id'] == 'ETH-USD') {
+          _ETHUSDExchange = Number.parseFloat(data['price']);
+        }
+        _USDEquity = _USDBalance + (_BTCBalance * _BTCUSDExchange) + (_ETHBalance * _ETHUSDExchange);
+        var _USDTrade = (0.02 * _USDEquity).toFixed(2);
+        _BTCEquity = _USDEquity / _BTCUSDExchange;
+        var _BTCTrade = (0.02 * _BTCEquity).toFixed(5);
+        _ETHEquity = _USDEquity / _ETHUSDExchange;
+        var _ETHTrade = (0.02 * _ETHEquity).toFixed(5);
+        USDEquity.setContent('{yellow-fg}USD{/yellow-fg} ' + _USDEquity.toFixed(2) + ' '
+          + '{' + _USDEquityGainLossColor + '}'
+          + _USDEquityGainLossIndicator
+          + _USDEquityGainLoss
+          + '%{/' + _USDEquityGainLossColor + '}');
+        USDPerTrade.setContent('{yellow-fg}USD{/yellow-fg} ' + _USDTrade);
+        BTCPerTrade.setContent('{yellow-fg}BTC{/yellow-fg} ' + _BTCTrade);
+        ETHPerTrade.setContent('{yellow-fg}ETH{/yellow-fg} ' + _ETHTrade);
+        screen.render();
       }
-      _USDEquity = _USDBalance + (_BTCBalance * _BTCUSDExchange) + (_ETHBalance * _ETHUSDExchange);
-      var _USDTrade = (0.02 * _USDEquity).toFixed(2);
-      _BTCEquity = _USDEquity / _BTCUSDExchange;
-      var _BTCTrade = (0.02 * _BTCEquity).toFixed(5);
-      _ETHEquity = _USDEquity / _ETHUSDExchange;
-      var _ETHTrade = (0.02 * _ETHEquity).toFixed(5);
-      USDEquity.setContent('{yellow-fg}USD{/yellow-fg} ' + _USDEquity.toFixed(2) + ' '
-        + '{' + _USDEquityGainLossColor + '}'
-        + _USDEquityGainLossIndicator
-        + _USDEquityGainLoss
-        + '%{/' + _USDEquityGainLossColor + '}');
-      USDPerTrade.setContent('{yellow-fg}USD{/yellow-fg} ' + _USDTrade);
-      BTCPerTrade.setContent('{yellow-fg}BTC{/yellow-fg} ' + _BTCTrade);
-      ETHPerTrade.setContent('{yellow-fg}ETH{/yellow-fg} ' + _ETHTrade);
-      screen.render();
-    }
-    if(!_websocketInit) {
-      _websocketInit = true;
-    }
-  });
-  websocket.on('error', err => {
-    /* handle error */
-  });
-  websocket.on('close', () => {
-    connectWebsocket();
-  });
+      if(!_websocketInit) {
+        _websocketInit = true;
+      }
+    });
+    websocket.on('error', err => {
+      /* handle error */
+    });
+    websocket.on('close', () => {
+      connectWebsocket();
+    });
+  } catch(e) {
+    setTimeout(connectWebsocket, 500);
+  }
 }
 connectWebsocket();
 
