@@ -17,14 +17,14 @@ var Equity = blessed.text({
   bg: 'blue',
   fg: 'cyan',
   top: pos++,
-  width: 32
+  width: '100%'
 });
 screen.append(Equity);
 
 var USDEquity = blessed.text({
   tags: true,
   top: pos++,
-  width: 32
+  width: '100%'
 });
 screen.append(USDEquity);
 
@@ -33,7 +33,7 @@ var Wallet = blessed.text({
   bg: 'blue',
   fg: 'cyan',
   top: pos++,
-  width: 32
+  width: '100%'
 });
 screen.append(Wallet);
 
@@ -41,7 +41,7 @@ var _USDBalance = 0.0;
 var USDBalance = blessed.text({
   tags: true,
   top: pos++,
-  width: 32
+  width: '100%'
 });
 screen.append(USDBalance);
 
@@ -49,7 +49,7 @@ var _BTCBalance = 0.0;
 var BTCBalance = blessed.text({
   tags: true,
   top: pos++,
-  width: 32
+  width: '100%'
 });
 screen.append(BTCBalance);
 
@@ -57,7 +57,7 @@ var _ETHBalance = 0.0;
 var ETHBalance = blessed.text({
   tags: true,
   top: pos++,
-  width: 32
+  width: '100%'
 });
 screen.append(ETHBalance);
 
@@ -66,7 +66,7 @@ var PerTrade = blessed.text({
   bg: 'blue',
   fg: 'cyan',
   top: pos++,
-  width: 32
+  width: '100%'
 });
 screen.append(PerTrade);
 
@@ -74,7 +74,7 @@ var _USDPerTrade = 0.0;
 var USDPerTrade = blessed.text({
   tags: true,
   top: pos++,
-  width: 32
+  width: '100%'
 });
 screen.append(USDPerTrade);
 
@@ -82,7 +82,7 @@ var _BTCPerTrade = 0.0;
 var BTCPerTrade = blessed.text({
   tags: true,
   top: pos++,
-  width: 32
+  width: '100%'
 });
 screen.append(BTCPerTrade);
 
@@ -90,7 +90,7 @@ var _ETHPerTrade = 0.0;
 var ETHPerTrade = blessed.text({
   tags: true,
   top: pos++,
-  width: 32
+  width: '100%'
 });
 screen.append(ETHPerTrade);
 
@@ -99,13 +99,13 @@ var Hashrate = blessed.text({
   bg: 'blue',
   fg: 'cyan',
   top: pos++,
-  width: 32
+  width: '100%'
 });
 screen.append(Hashrate);
 
 var ReportedHashrate = blessed.text({
   top: pos++,
-  width: 32
+  width: '100%'
 });
 screen.append(ReportedHashrate);
 
@@ -114,28 +114,28 @@ var Unpaid = blessed.text({
   bg: 'blue',
   fg: 'cyan',
   top: pos++,
-  width: 32
+  width: '100%'
 });
 screen.append(Unpaid);
 
 var _UnpaidBalance = 0;
 var UnpaidBalance = blessed.text({
   top: pos++,
-  width: 32
+  width: '100%'
 });
 screen.append(UnpaidBalance);
 
 var _PayoutETA = 0;
 var PayoutETA = blessed.text({
   top: pos++,
-  width: 32
+  width: '100%'
 });
 screen.append(PayoutETA);
 
 var _PayoutDelta = 0;
 var PayoutDelta = blessed.text({
   top: pos++,
-  width: 32
+  width: '100%'
 });
 screen.append(PayoutDelta);
 
