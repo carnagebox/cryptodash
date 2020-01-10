@@ -46,6 +46,7 @@ var Hashrate = blessed.text({
 screen.append(Hashrate);
 
 var ReportedHashrate = blessed.text({
+  tags: true,
   top: pos++,
   width: '100%'
 });
@@ -62,6 +63,7 @@ screen.append(Unpaid);
 
 var _UnpaidBalance = 0;
 var UnpaidBalance = blessed.text({
+  tags: true,
   top: pos++,
   width: '100%'
 });
@@ -69,6 +71,7 @@ screen.append(UnpaidBalance);
 
 var _PayoutETA = 0;
 var PayoutETA = blessed.text({
+  tags: true,
   top: pos++,
   width: '100%'
 });
@@ -76,6 +79,7 @@ screen.append(PayoutETA);
 
 var _PayoutDelta = 0;
 var PayoutDelta = blessed.text({
+  tags: true,
   top: pos++,
   width: '100%'
 });
@@ -108,11 +112,11 @@ function refreshWallet() {
       if(d['currency'] == 'USD') {
         _USDBalance = Number.parseFloat(d['balance']);
         var _USDPercent = Math.round((_USDBalance/_USDEquity)*100);
-        USDBalance.setContent('{yellow-fg}USD{/yellow-fg} ' + _USDBalance.toFixed(2) + ' (' + _USDPercent + '%)');
+        USDBalance.setContent('{yellow-fg}${/yellow-fg} ' + _USDBalance.toFixed(2) + ' (' + _USDPercent + '%)');
       } else if (d['currency'] == 'ETH') {
         _ETHBalance = Number.parseFloat(d['balance']);
         var _ETHPercent = Math.round((_ETHBalance/_ETHEquity)*100);
-        ETHBalance.setContent('{yellow-fg}ETH{/yellow-fg} ' + _ETHBalance.toFixed(8) + ' (' + _ETHPercent + '%)');
+        ETHBalance.setContent('{yellow-fg}Ð{/yellow-fg} ' + _ETHBalance.toFixed(8) + ' (' + _ETHPercent + '%)');
       }
     });
     screen.render();
@@ -136,21 +140,21 @@ function refreshMinerStats() {
       if(err || !body.data) {
         return;
       }
-      ReportedHashrate.setContent('⌗ ' + Number.parseFloat(body.data.reportedHashrate/1000000).toFixed(2) + ' Mh/s');
+      ReportedHashrate.setContent('{yellow-fg}⌗{/yellow-fg} ' + Number.parseFloat(body.data.reportedHashrate/1000000).toFixed(2) + ' Mh/s');
       if(body.data.unpaid) {
         _UnpaidBalance = Number.parseFloat(body.data.unpaid/1000000000000000000);
         _CoinsPerMSec = body.data.coinsPerMin/60/1000;
         var MinimumPayout = Number.parseFloat(_minPayout/1000000000000000000);
-        UnpaidBalance.setContent('Ξ ' + _UnpaidBalance.toFixed(6) + '/' + MinimumPayout + ' (' + Math.round((_UnpaidBalance/MinimumPayout)*100) + '%)');
+        UnpaidBalance.setContent('{yellow-fg}Ð{/yellow-fg} ' + _UnpaidBalance.toFixed(6) + '/' + MinimumPayout + ' (' + Math.round((_UnpaidBalance/MinimumPayout)*100) + '%)');
         _PayoutDelta = Math.round(((_minPayout - body.data.unpaid)/1000000000000000000)/(_CoinsPerMSec*1000));
         var date = new Date();
         date.setTime(date.getTime() + (_PayoutDelta*1000));
-        PayoutETA.setContent('H ' + date.toLocaleString());
+        PayoutETA.setContent('{yellow-fg}H{/yellow-fg} ' + date.toLocaleString());
       } else {
         //Reset everything pending payout.
         _UnpaidBalance = 0.0;
         _CoinsPerMSec = 0.0;
-        PayoutETA.setContent('H --');
+        PayoutETA.setContent('{yellow-fg}H{/yellow-fg} --');
       }
    });
   });
@@ -161,7 +165,7 @@ refreshMinerStats();
 function updateUnpaidBalance() {
   _UnpaidBalance += (_CoinsPerMSec*1000);
   var MinimumPayout = Number.parseFloat(_minPayout/1000000000000000000);
-  UnpaidBalance.setContent('Ξ ' + _UnpaidBalance.toFixed(5) + '/' + MinimumPayout + ' (' + Math.round((_UnpaidBalance/MinimumPayout)*100) + '%)');
+  UnpaidBalance.setContent('{yellow-fg}Ð{/yellow-fg} ' + _UnpaidBalance.toFixed(5) + '/' + MinimumPayout + ' (' + Math.round((_UnpaidBalance/MinimumPayout)*100) + '%)');
   setTimeout(updateUnpaidBalance, 1000);
 }
 updateUnpaidBalance();
@@ -175,7 +179,7 @@ function updateDelta() {
   x = x%3600;
   var c = Math.floor(x/60); //minutes
   var d = x%60; //seconds
-  var o = 'Δ ';
+  var o = '{yellow-fg}Δ{/yellow-fg} ';
   if(a>0) {
     o += a+'d ';
   }
@@ -188,7 +192,7 @@ function updateDelta() {
   if(d>0) {
     o += d+'s';
   }
-  if(o=='Δ ') {
+  if(o=='{yellow-fg}Δ{/yellow-fg} ') {
     o += 'less than a minute';
     switch(deltaWaiting) {
       case 1:
