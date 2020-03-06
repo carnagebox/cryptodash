@@ -116,7 +116,7 @@ function refreshWallet() {
       } else if (d['currency'] == 'ETH') {
         _ETHBalance = Number.parseFloat(d['balance']);
         var _ETHPercent = Math.round((_ETHBalance/_ETHEquity)*100);
-        ETHBalance.setContent('{yellow-fg}Ð{/yellow-fg} ' + _ETHBalance.toFixed(8) + ' (' + _ETHPercent + '%)');
+          ETHBalance.setContent('{yellow-fg}Ξ{/yellow-fg} ' + _ETHBalance.toFixed(8) + ' (' + _ETHPercent + '%)');
       }
     });
     screen.render();
@@ -146,7 +146,7 @@ function refreshMinerStats() {
           _UnpaidBalance = Number.parseFloat(body.data.unpaid/1000000000000000000);
           _CoinsPerMSec = body.data.coinsPerMin/60/1000;
           var MinimumPayout = Number.parseFloat(_minPayout/1000000000000000000);
-          UnpaidBalance.setContent('{yellow-fg}Ð{/yellow-fg} ' + _UnpaidBalance.toFixed(6) + '/' + MinimumPayout + ' (' + Math.round((_UnpaidBalance/MinimumPayout)*100) + '%)');
+          UnpaidBalance.setContent('{yellow-fg}Ξ{/yellow-fg} ' + _UnpaidBalance.toFixed(6) + '/' + MinimumPayout + ' (' + Math.round((_UnpaidBalance/MinimumPayout)*100) + '%)');
           _PayoutDelta = Math.round(((_minPayout - body.data.unpaid)/1000000000000000000)/(_CoinsPerMSec*1000));
           var date = new Date();
           date.setTime(date.getTime() + (_PayoutDelta*1000));
@@ -169,7 +169,7 @@ refreshMinerStats();
 function updateUnpaidBalance() {
   _UnpaidBalance += (_CoinsPerMSec*1000);
   var MinimumPayout = Number.parseFloat(_minPayout/1000000000000000000);
-  UnpaidBalance.setContent('{yellow-fg}Ð{/yellow-fg} ' + _UnpaidBalance.toFixed(5) + '/' + MinimumPayout + ' (' + Math.round((_UnpaidBalance/MinimumPayout)*100) + '%)');
+  UnpaidBalance.setContent('{yellow-fg}Ξ{/yellow-fg} ' + _UnpaidBalance.toFixed(5) + '/' + MinimumPayout + ' (' + Math.round((_UnpaidBalance/MinimumPayout)*100) + '%)');
   setTimeout(updateUnpaidBalance, 1000);
 }
 updateUnpaidBalance();
