@@ -131,38 +131,36 @@ var _CoinsPerMSec = 0.0;
 var _minPayout = 1;
 
 function refreshMinerStats() {
-  try {
-    request.get(ethermine.settingUri, { json: true }, (err, res, body) => {
-      if(err || !body.data) {
-        return false;
-      }
+  request.get({uri: ethermine.settingUri, json: true })
+    .then((body) => {
       _minPayout = body.data.minPayout;
-      request.get(ethermine.statUri, { json: true }, (err, res, body) => {
-        if(err || !body.data) {
-          return false;
-        }
-        ReportedHashrate.setContent('{yellow-fg}⌗{/yellow-fg} ' + Number.parseFloat(body.data.reportedHashrate/1000000).toFixed(2) + ' Mh/s');
-        if(body.data.unpaid) {
-          _UnpaidBalance = Number.parseFloat(body.data.unpaid/1000000000000000000);
-          _CoinsPerMSec = body.data.coinsPerMin/60/1000;
-          var MinimumPayout = Number.parseFloat(_minPayout/1000000000000000000);
-          UnpaidBalance.setContent('{yellow-fg}Ð{/yellow-fg} ' + _UnpaidBalance.toFixed(6) + '/' + MinimumPayout + ' (' + Math.round((_UnpaidBalance/MinimumPayout)*100) + '%)');
-          _PayoutDelta = Math.round(((_minPayout - body.data.unpaid)/1000000000000000000)/(_CoinsPerMSec*1000));
-          var date = new Date();
-          date.setTime(date.getTime() + (_PayoutDelta*1000));
-          PayoutETA.setContent('{yellow-fg}H{/yellow-fg} ' + date.toLocaleString());
-        } else {
-          //Reset everything pending payout.
-          _UnpaidBalance = 0.0;
-          _CoinsPerMSec = 0.0;
-          PayoutETA.setContent('{yellow-fg}H{/yellow-fg} --');
-        }
-     });
+      request.get({uri: ethermine.statUri, json: true })
+        .then((body) => {
+          ReportedHashrate.setContent('{yellow-fg}⌗{/yellow-fg} ' + Number.parseFloat(body.data.reportedHashrate/1000000).toFixed(2) + ' Mh/s');
+          if(body.data.unpaid) {
+            _UnpaidBalance = Number.parseFloat(body.data.unpaid/1000000000000000000);
+            _CoinsPerMSec = body.data.coinsPerMin/60/1000;
+            var MinimumPayout = Number.parseFloat(_minPayout/1000000000000000000);
+            UnpaidBalance.setContent('{yellow-fg}Ð{/yellow-fg} ' + _UnpaidBalance.toFixed(6) + '/' + MinimumPayout + ' (' + Math.round((_UnpaidBalance/MinimumPayout)*100) + '%)');
+            _PayoutDelta = Math.round(((_minPayout - body.data.unpaid)/1000000000000000000)/(_CoinsPerMSec*1000));
+            var date = new Date();
+            date.setTime(date.getTime() + (_PayoutDelta*1000));
+            PayoutETA.setContent('{yellow-fg}H{/yellow-fg} ' + date.toLocaleString());
+          } else {
+            //Reset everything pending payout.
+            _UnpaidBalance = 0.0;
+            _CoinsPerMSec = 0.0;
+            PayoutETA.setContent('{yellow-fg}H{/yellow-fg} --');
+          }
+        })
+        .catch((reason) => {
+          setTimeout(refreshMinerStats, 500);
+        });
+    }).catch((reason) => {
+      setTimeout(refreshMinerStats, 500);
     });
-    setTimeout(refreshMinerStats, 2*60*1000);
-  } catch(e) {
-    setTimeout(refreshMinerStats, 500);
-  }
+  screen.render();
+  setTimeout(refreshMinerStats, 2*60*1000);
 }
 refreshMinerStats();
 
@@ -171,6 +169,7 @@ function updateUnpaidBalance() {
   var MinimumPayout = Number.parseFloat(_minPayout/1000000000000000000);
   UnpaidBalance.setContent('{yellow-fg}Ð{/yellow-fg} ' + _UnpaidBalance.toFixed(5) + '/' + MinimumPayout + ' (' + Math.round((_UnpaidBalance/MinimumPayout)*100) + '%)');
   setTimeout(updateUnpaidBalance, 1000);
+  screen.render();
 }
 updateUnpaidBalance();
 
@@ -224,6 +223,7 @@ function updateDelta() {
     deltaWaiting = false;
   }
   PayoutDelta.setContent(o);
+  screen.render();
   setTimeout(updateDelta, 1000);
 }
 updateDelta();
