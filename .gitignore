@@ -2,9 +2,6 @@
 config/*.json
 !config/example-default.json
 
-# Databases
-gainloss.json
-
 # Logs
 logs
 *.log
