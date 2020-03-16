@@ -15,10 +15,9 @@
   "license": "SEE LICENSE IN license.txt",
   "dependencies": {
     "blessed": "^0.1.81",
-    "config": "^3.1.0",
+    "config": "^3.3.0",
     "gdax": "^0.8.0",
     "lodash": "^4.17.14",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.4"
+    "request-promise": "^4.2.5"
   }
 }
