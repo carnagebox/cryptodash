@@ -17,7 +17,7 @@
     "blessed": "^0.1.81",
     "config": "^3.3.0",
     "gdax": "^0.8.0",
-    "lodash": "^4.17.14",
+    "lodash": "^4.17.19",
     "request-promise": "^4.2.5"
   }
 }
